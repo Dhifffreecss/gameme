@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catch the Emoji</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #d8b4fe, #f0abfc);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      color: #4b0082;
+      margin-bottom: 10px;
+    }
+    #score, #timer {
+      font-size: 1.5rem;
+      margin: 5px;
+      color: #fff;
+    }
+    #game-area {
+      position: relative;
+      width: 90vw;
+      height: 60vh;
+      border: 4px solid #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .emoji {
+      position: absolute;
+      font-size: 2.5rem;
+      cursor: pointer;
+      animation: fadeOut 1.5s linear forwards;
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.5); }
+    }
+    #start-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      border: none;
+      background-color: #9333ea;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Catch the Emoji!</h1>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time: 30</div>
+  <div id="game-area"></div>
+  <button id="start-btn">Start Game</button>
+
+  <script>
+    const gameArea = document.getElementById("game-area");
+    const scoreDisplay = document.getElementById("score");
+    const timerDisplay = document.getElementById("timer");
+    const startBtn = document.getElementById("start-btn");
+
+    const emojis = ['😸','🐵','🤩','😎','👻','🐱‍👤','🦄','🐣','💩','🍕','🌈','🧸'];
+    let score = 0;
+    let gameInterval;
+    let timer = 30;
+
+    function randomPosition(max) {
+      return Math.floor(Math.random() * max);
+    }
+
+    function spawnEmoji() {
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      const size = 40;
+      emoji.style.left = `${randomPosition(gameArea.clientWidth - size)}px`;
+      emoji.style.top = `${randomPosition(gameArea.clientHeight - size)}px`;
+
+      emoji.addEventListener("click", () => {
+        score++;
+        scoreDisplay.textContent = "Score: " + score;
+        emoji.remove();
+      });
+
+      gameArea.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1500);
+    }
+
+    function startGame() {
+      score = 0;
+      timer = 30;
+      scoreDisplay.textContent = "Score: 0";
+      timerDisplay.textContent = "Time: 30";
+      startBtn.disabled = true;
+
+      gameInterval = setInterval(() => {
+        spawnEmoji();
+      }, 700);
+
+      const countdown = setInterval(() => {
+        timer--;
+        timerDisplay.textContent = "Time: " + timer;
+        if (timer <= 0) {
+          clearInterval(countdown);
+          clearInterval(gameInterval);
+          alert("Waktu habis! Skormu: " + score);
+          startBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+    startBtn.addEventListener("click", startGame);
+  </script>
+
+</body>
+</html>
